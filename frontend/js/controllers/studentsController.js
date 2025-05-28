@@ -130,11 +130,14 @@ function fillForm(student)
 async function confirmDelete(id) 
 {
     if (!confirm('¿Estás seguro que deseas borrar este estudiante?')) return;
-  
+    
     try 
     {
+        showLoadingScreen();
         await studentsAPI.remove(id);
         loadStudents();
+        hideLoadingScreen();
+        //esto es subjects anda pero aca no????
     } 
     catch (err) 
     {

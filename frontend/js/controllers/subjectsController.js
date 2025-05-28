@@ -1,5 +1,5 @@
 import { subjectsAPI } from '../api/subjectsAPI.js';
-import { showLoadingScreen } from '../function.js';
+import { hideLoadingScreen, showLoadingScreen } from '../function.js';
 
 document.addEventListener('DOMContentLoaded', () => 
 {
@@ -12,6 +12,7 @@ function setupSubjectFormHandler()
   const form = document.getElementById('subjectForm');
   form.addEventListener('submit', async e => 
   {
+        showLoadingScreen();
         e.preventDefault();
         const subject = 
         {
@@ -24,25 +25,29 @@ function setupSubjectFormHandler()
             if (subject.id) 
             {
                 await subjectsAPI.update(subject);
+                alert("Materia actualizada");
             }
             else
             {
                 await subjectsAPI.create(subject);
+                alert("Materia agregada");
             }
             
-            form.reset();
-            document.getElementById('subjectId').value = '';
             loadSubjects();
         }
         catch (err)
         {
+            alert("No se pudo agregar");
             console.error(err.message);
         }
+        form.reset();
+        hideLoadingScreen();
   });
 }
 
 async function loadSubjects()
 {
+    showLoadingScreen();
     try
     {
         const subjects = await subjectsAPI.fetchAll();
@@ -52,6 +57,7 @@ async function loadSubjects()
     {
         console.error('Error cargando materias:', err.message);
     }
+    hideLoadingScreen();
 }
 
 function renderSubjectTable(subjects)
@@ -106,8 +112,11 @@ async function confirmDeleteSubject(id)
 
     try
     {
+        showLoadingScreen();
         await subjectsAPI.remove(id);
         loadSubjects();
+        hideLoadingScreen();
+                //agrego pantalla de carga para avisar que esta borrando
     }
     catch (err)
     {
