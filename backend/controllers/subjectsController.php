@@ -23,14 +23,24 @@ function handleGet($conn)
 function handlePost($conn) 
 {
     $input = json_decode(file_get_contents("php://input"), true);
-    if (createSubject($conn, $input['name'])) 
-    {
-        echo json_encode(["message" => "Materia creada correctamente"]);
-    } 
-    else 
-    {
-        http_response_code(500);
-        echo json_encode(["error" => "No se pudo crear"]);
+    try{
+        if (createSubject($conn, $input['name'])) 
+        {
+            echo json_encode(["message" => "Materia creada correctamente"]);
+        } 
+        else 
+        {
+            http_response_code(500);
+            echo json_encode(["error" => "No se pudo crear"]);
+        }
+    }catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1062) {
+            http_response_code(409); // Conflicto resuelto por chat gpt, pero el 409 llega como undefined
+            echo json_encode(["error" => "Ya existe una materia con ese nombre"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "Error del servidor: " . $e->getMessage()]);
+        }
     }
 }
 

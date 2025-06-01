@@ -37,7 +37,11 @@ function setupSubjectFormHandler()
         }
         catch (err)
         {
-            alert("No se pudo agregar");
+            if(err.status === 409){ //como hago que detecte el 409!!
+                alert("Ya existe una materia con dicho nombre - No se puede actualizar");
+            }else{
+                alert("No se pudo agregar");
+            }
             console.error(err.message);
         }
         form.reset();
